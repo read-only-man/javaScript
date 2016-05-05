@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>resize image</title>
+        <script type="text/javascript" src="./lib/jquery-2.2.3.js"></script>
+        <script type="text/javascript" src="./lib/img_data_util.js"></script>
+        <script type="text/javascript" src="./lib/resize_image.js"></script>
+        <script type="text/javascript" charset="utf-8">
+            $(document).ready(function() {
+                var $ul_list = $("#ul1");
+                var origin_image_data;
+
+                var claer = function($elm) {
+                    $elm.empty();
+                };
+                $("#upload_image").bind("change", function() {
+                    claer($ul_list);
+                    $ul_list.append("<li>画像をアップロードすると、500KB以下に減らす</li>");
+                    // アップロード画像のファイル取得
+                    var image_file = this.files[0];
+                    var image_file_size_byte = image_file.size;
+                    $ul_list.append("<li>original file size : " + image_file_size_byte + "B</li>");
+                    $ul_list.append("<li>original file size : " + image_utils.format_round_to(image_utils.byte_to_KB(image_file_size_byte)) + "KB</li>");
+                    $ul_list.append("<li>original file size : " + image_utils.format_round_to(image_utils.byte_to_MB(image_file_size_byte)) + "MB</li>");
+
+                    // アップロードデータの取得
+                    var file_reader = new FileReader();
+                    file_reader.onload = function() {
+                        origin_image_data = this.result;
+                        $("#origin_image").attr("src", origin_image_data);
+                    };
+                    file_reader.readAsDataURL(image_file);
+                });
+
+                $("#resize1").bind("click", function() {
+                    if (origin_image_data) {
+                        console.log(origin_image_data);
+                        // リサイズ処理実施
+                        var resize_image_data = resize_image_to_500KB(origin_image_data);
+
+                        // リサイズ後データ
+                        var $resize_div = $("resize_info");
+                        claer($resize_div);
+                        var resize_image_file_size_byte = image_utils.get_file_size_from_dataURI(resize_image_data);
+                        $resize_div.append("<ul id='ul2'>" + "<li>resize file size : " + resize_image_file_size_byte + "B</li>" + "<li>original file size : " + image_utils.format_round_to(image_utils.byte_to_KB(resize_image_file_size_byte)) + "KB</li>" + "<li>original file size : " + image_utils.format_round_to(image_utils.byte_to_MB(resize_image_file_size_byte)) + "MB</li></ul>");
+                        $resize_div.appehd("<img id='resize_image'>");
+                        $("#resize_image").attr("src", resize_image_data);
+                    }
+                });
+            });
+        </script>
+    </head>
+    <body>
+        <h1>Resize image to 500KB</h1>
+        <div id="oringin_info">
+            <ul id="ul1">
+                <li>
+                    画像をアップロードすると、500KB以下に減らす
+                </li>
+            </ul>
+            <input type="file" name="upload_image" value="" id="upload_image"/>
+            <button name="resize1" id="resize1">
+                変換
+            </button>
+            <img id="origin_image">
+        </div>
+        <div id="resize_info">
+            <img id="resize_image">
+        </div>
+    </body>
+</html>
