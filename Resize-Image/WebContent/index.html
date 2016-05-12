@@ -37,15 +37,18 @@
                     if (origin_image_data) {
                         console.log(origin_image_data);
                         // リサイズ処理実施
-                        var resize_image_data = resize_image_to_500KB(origin_image_data);
+                        resize_image_to_500KB_and_done(
+                            origin_image_data,
+                            function(resize_image_data){
+                                // リサイズ後データ
+                                var $resize_div = $("resize_info");
+                                claer($resize_div);
+                                var resize_image_file_size_byte = image_utils.get_file_size_from_dataURI(resize_image_data);
+                                $resize_div.append("<ul id='ul2'>" + "<li>resize file size : " + resize_image_file_size_byte + "B</li>" + "<li>original file size : " + image_utils.format_round_to(image_utils.byte_to_KB(resize_image_file_size_byte)) + "KB</li>" + "<li>original file size : " + image_utils.format_round_to(image_utils.byte_to_MB(resize_image_file_size_byte)) + "MB</li></ul>");
+                                $resize_div.append("<img id='resize_image'>");
+                                $("#resize_image").attr("src", resize_image_data);
+                            });
 
-                        // リサイズ後データ
-                        var $resize_div = $("resize_info");
-                        claer($resize_div);
-                        var resize_image_file_size_byte = image_utils.get_file_size_from_dataURI(resize_image_data);
-                        $resize_div.append("<ul id='ul2'>" + "<li>resize file size : " + resize_image_file_size_byte + "B</li>" + "<li>original file size : " + image_utils.format_round_to(image_utils.byte_to_KB(resize_image_file_size_byte)) + "KB</li>" + "<li>original file size : " + image_utils.format_round_to(image_utils.byte_to_MB(resize_image_file_size_byte)) + "MB</li></ul>");
-                        $resize_div.appehd("<img id='resize_image'>");
-                        $("#resize_image").attr("src", resize_image_data);
                     }
                 });
             });
